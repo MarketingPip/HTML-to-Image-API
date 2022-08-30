@@ -3,6 +3,16 @@ require('dotenv').config();
 const express = require('express');
 const puppeteer = require('puppeteer');
 
+
+
+
+// import * as puppeteer from 'puppeteer';
+import chromium from 'chrome-aws-lambda';
+
+// const browser = await puppeteer.launch( { args: ['--no-sandbox'] } );
+
+
+
 // initialize app
 const app = express();
 
@@ -13,7 +23,13 @@ app.use(express.json());
 // initialize puppeteer function
 (async () => {
 	// launch headless browser
-	const browser = await puppeteer.launch({ headless: true, args: [ '--no-sandbox' ] });
+	const browser = await chromium.puppeteer.launch({
+    args: [...chromium.args, "--hide-scrollbars", "--disable-web-security"],
+    defaultViewport: chromium.defaultViewport,
+    executablePath: await chromium.executablePath,
+    headless: true,
+    ignoreHTTPSErrors: true,
+  });
 
 	// post request is made to render
 	app.post('/render', (req, res) => {
